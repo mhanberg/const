@@ -9,7 +9,15 @@ defmodule TopBlogs do
   defk BEST_BLOG, "https://mitchellhanberg.com"
 
   def the_best?() do
-    IO.puts ~k"BEST_BLOG"
+    ~k"BEST_BLOG"
+  end
+end
+
+defmodule TopBlogs.Blogs do
+  use Const
+
+  def list do
+    ~k"BEST_BLOG"TopBlogs
   end
 end
 ```

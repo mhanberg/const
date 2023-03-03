@@ -7,7 +7,15 @@ defmodule Const do
     defk BEST_BLOG, "https://mitchellhanberg.com"
 
     def the_best?() do
-      IO.puts ~k"BEST_BLOG"
+      ~k"BEST_BLOG"TopBlogs
+    end
+  end
+
+  defmodule TopBlogs.Blogs do
+    use Const
+
+    def list do
+      ~k"BEST_BLOG"TopBlogs
     end
   end
   ```
@@ -18,17 +26,26 @@ defmodule Const do
     end
   end
 
-  defmacro defk({:__aliases__, [line: 4], [constant]}, value) do
-    func_name = {:"k#{constant}", [], nil}
+  defmacro defk({:__aliases__, _, [constant]}, value) do
+    func_name = {:"__k#{constant}__", [], nil}
 
     quote do
+      @doc false
       def unquote(func_name) do
         unquote(value)
       end
     end
   end
 
-  defmacro sigil_k({:<<>>, _, [bin]}, _mods) do
-    {:"k#{bin}", [], []}
+  defmacro sigil_k({:<<>>, _, [bin]}, mods) do
+    func = :"__k#{bin}__"
+
+    if Enum.any?(mods) do
+      {{:., [],
+        [{:__aliases__, [alias: false], [String.to_existing_atom(to_string(mods))]}, func]}, [],
+       []}
+    else
+      {func, [], []}
+    end
   end
 end
